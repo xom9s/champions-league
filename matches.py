@@ -6,7 +6,7 @@ with open('config.json', 'r') as config_file:
 
 FOOTBALL_DATA = config['FOOTBALL_DATA']
 
-uri = 'https://api.football-data.org/v4/competitions/CL/matches'
+uri = 'https://api.football-data.org/v4/competitions/SA/matches'
 headers = { 'X-Auth-Token': FOOTBALL_DATA }
 
 matches = requests.get(uri, headers=headers)
