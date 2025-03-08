@@ -1,2 +1,8 @@
+#ENVIRONMENTS
 myenv
+
+#JSON
 config.json
+
+#CACHE
+__pycache__
