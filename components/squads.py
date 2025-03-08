@@ -1,12 +1,7 @@
-import requests
-import json
+from . import json, requests, FOOTBALL_DATA
 
 def get_squads():
-    with open ('config.json', 'r') as config_file:
-        config = json.load(config_file)
-
-    FOOTBALL_DATA = config['FOOTBALL_DATA']
-
+    
     uri = 'https://api.football-data.org/v4/competitions/SA/teams'
     headers = {'X-Auth-Token':FOOTBALL_DATA}
 
