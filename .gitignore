@@ -6,3 +6,6 @@ config.json
 
 #CACHE
 __pycache__
+
+#TO-DO
+todo.md
