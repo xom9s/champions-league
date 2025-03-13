@@ -1,10 +1,8 @@
-from . import json, requests, FOOTBALL_DATA
+import streamlit as st
+from etl.standings_etl import get_standings
 
-def get_standings():
-
-    uri = 'https://api.football-data.org/v4/competitions/SA/standings'
-    headers = { 'X-Auth-Token': FOOTBALL_DATA}
-
-    standings = requests.get(uri, headers=headers)
-    
-    return standings.json()['standings']
+def display_standings():
+    standings = get_standings()
+    for standing in standings:
+        st.write("### Standings")
+        st.write(standing['table'])
