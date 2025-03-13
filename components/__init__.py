@@ -1,6 +1,8 @@
 import requests
 import json
 import psycopg2
+import streamlit as st
+import pandas as pd
 
 with open('config.json', 'r') as config_file:
         config = json.load(config_file)
