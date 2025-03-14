@@ -1,48 +1,53 @@
 from components import requests, get_connection, STOCKS
+from typing import Optional, Dict, Any
+
+STOCKS_API_URL = 'https://financialmodelingprep.com/api/v3/stock/full/real-time-price/INTERUSD'
 
 
-def get_stocks():
+def get_stocks() -> Optional[Dict[str, Any]]:
     
-    uri = f'https://financialmodelingprep.com/api/v3/stock/full/real-time-price/INTERUSD?apikey={STOCKS}'
+    uri = f'{STOCKS_API_URL}?apikey={STOCKS}'
 
-    stocks_info = requests.get(uri)
+    try:
+        response = requests.get(uri) 
+        response.raise_for_status()   
+        return response.json()
 
-    if stocks_info.status_code == 200:
-        return stocks_info.json()
+    except (requests.RequestException, ValueError) as e:
+         print(f"Error fetching stocks data: {e}")
+         return None
 
-
-    else:
-         print(f"Error: {stocks_info.status_code}")
-
-def load_stocks_to_db():
+def load_stocks_to_db() -> None:
     data = get_stocks()
+    if not data:
+        return
+    
     conn = get_connection()
-
     if not conn:
         return
-    cur = conn.cursor()
-    cur.execute("""CREATE TABLE IF NOT EXISTS stocks ( id SERIAL PRIMARY KEY,
-        symbol VARCHAR(10),
-        last_price FLOAT,
-        volume INT,
-        last_updated BIGINT);""")
-    if data:
-        stock = data[0]
-        symbol = stock["symbol"]
-        last_price = stock["lastSalePrice"]
-        volume = stock["volume"]
-        last_updated = stock["lastUpdated"]
-    
+
+    with conn.cursor() as cur:
+        cur.execute("""CREATE TABLE IF NOT EXISTS stocks ( id SERIAL PRIMARY KEY,
+            symbol VARCHAR(10),
+            last_price FLOAT,
+            volume INT,
+            last_updated BIGINT);""")
+        if data:
+            stock = data[0]
+            symbol = stock["symbol"]
+            last_price = stock["lastSalePrice"]
+            volume = stock["volume"]
+            last_updated = stock["lastUpdated"]
+            
+            if all([symbol, last_price, volume, last_updated]):
+                cur.execute("""INSERT INTO stocks (symbol, last_price, volume, last_updated) VALUES (%s, %s, %s, %s);""", (symbol, last_price, volume, last_updated))
+
+
         
-
-        cur.execute("""INSERT INTO stocks (symbol, last_price, volume, last_updated) VALUES (%s, %s, %s, %s);""", (symbol, last_price, volume, last_updated))
-
-
-    
-        conn.commit()
-        cur.close()
-        conn.close()
-        print("Stock data successfully loaded")
+    conn.commit()
+    cur.close()
+    conn.close()
+    print("Stock data successfully loaded")
 
 
 if __name__ == "__main__":

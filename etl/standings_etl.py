@@ -8,9 +8,9 @@ def get_standings() -> Optional[List[Dict[str, Any]]]:
 
     headers = { 'X-Auth-Token': FOOTBALL_DATA}
     try:
-        standings = requests.get(FOOTBALL_API_URI, headers=headers)
-        standings.raise_for_status()
-        data = standings.json()
+        response = requests.get(FOOTBALL_API_URI, headers=headers)
+        response.raise_for_status()
+        data = response.json()
         return data.get('standings', [])
     
     except (requests.RequestException, ValueError) as e:
