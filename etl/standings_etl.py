@@ -1,10 +1,18 @@
-from components import requests, FOOTBALL_DATA
+from typing import Any, Dict, List, Optional
+from components import FOOTBALL_DATA
+import requests
 
-def get_standings():
+FOOTBALL_API_URI = 'https://api.football-data.org/v4/competitions/SA/standings'
 
-    uri = 'https://api.football-data.org/v4/competitions/SA/standings'
+def get_standings() -> Optional[List[Dict[str, Any]]]:
+
     headers = { 'X-Auth-Token': FOOTBALL_DATA}
-
-    standings = requests.get(uri, headers=headers)
+    try:
+        standings = requests.get(FOOTBALL_API_URI, headers=headers)
+        standings.raise_for_status()
+        data = standings.json()
+        return data.get('standings', [])
     
-    return standings.json()['standings']
+    except (requests.RequestException, ValueError) as e:
+        print(f"Error fetching standings {e}")
+        return []
